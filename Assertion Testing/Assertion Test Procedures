@@ -5,12 +5,6 @@ test
 
 
 
-
-Below doesn't work
-
-To test TestNil.sol and TestNil.js:
-
-
 Need to check truffle-config.js, migrations deploy contracts file.
 
 ## terminal 1:
