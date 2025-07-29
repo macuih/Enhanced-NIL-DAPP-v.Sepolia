@@ -56,6 +56,7 @@ function App() {
       alert("Athlete registered!");
     } catch (err) {
       console.error(err);
+      alert("Error registering athlete.");
     }
   };
 
@@ -67,6 +68,7 @@ function App() {
       alert("Contract submitted!");
     } catch (err) {
       console.error(err);
+      alert("Error submitting contract.");
     }
   };
 
@@ -78,6 +80,7 @@ function App() {
       alert("Transaction logged!");
     } catch (err) {
       console.error(err);
+      alert("Error logging transaction.");
     }
   };
 
@@ -87,6 +90,7 @@ function App() {
       setContractsList(result);
     } catch (err) {
       console.error(err);
+      alert("Error viewing contracts.");
     }
   };
 
@@ -96,17 +100,22 @@ function App() {
       setTransactionsList(result);
     } catch (err) {
       console.error(err);
+      alert("Error viewing transactions.");
     }
   };
 
   const handlePayAthlete = async () => {
     try {
       const value = parseEther(payAmount || "0");
-      const tx = await contract.payAthlete(payAddress, payPurpose, { value });
+      console.log("Sending", value.toString(), "ETH to", payAddress, "for", payPurpose);
+      const tx = await contract.payAthlete(payAddress, payPurpose, {
+        value: value,
+      });
       await tx.wait();
       alert("Payment sent!");
     } catch (err) {
-      console.error(err);
+      console.error("Error sending payment:", err);
+      alert("Error sending payment.");
     }
   };
 
@@ -116,6 +125,7 @@ function App() {
       setAthleteInfo(result);
     } catch (err) {
       console.error(err);
+      alert("Error checking status.");
     }
   };
 
@@ -127,6 +137,7 @@ function App() {
       loadUnverifiedAthletes();
     } catch (err) {
       console.error(err);
+      alert("Error verifying athlete.");
     }
   };
 
@@ -154,6 +165,8 @@ function App() {
   return (
     <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
       <h1>NIL Transparency DApp</h1>
+      <p><strong>Connected Wallet:</strong> {account}</p>
+
       <div style={{ marginBottom: "20px" }}>
         <button onClick={() => setActiveTab("register")}>Register</button>
         <button onClick={() => setActiveTab("submitActivity")}>Submit Activity</button>
@@ -264,3 +277,4 @@ function App() {
 }
 
 export default App;
+

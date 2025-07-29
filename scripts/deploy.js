@@ -1,36 +1,23 @@
+// scripts/deploy.js
 const hre = require("hardhat");
-const fs = require("fs");
-const path = require("path");
 
 async function main() {
+  console.log("Deploying contract to Sepolia...");
+
+  // Compile and deploy the contract
   const ContractFactory = await hre.ethers.getContractFactory("NILTransparencyContract");
-  const contract = await ContractFactory.deploy(); // ✅ This already waits
+  const contract = await ContractFactory.deploy();
 
-  console.log("✅ Contract deployed to:", contract.target || contract.address); // use .target if ethers v6
+  await contract.waitForDeployment();
 
-  saveFrontendFiles(contract, "NILTransparencyContract");
+  const contractAddress = await contract.getAddress();
+  console.log(`✅ Contract deployed to: ${contractAddress}`);
 }
 
-function saveFrontendFiles(contract, name) {
-  const contractsDir = path.join(__dirname, "..", "src", "artifacts");
+main()
+  .then(() => process.exit(0))
+  .catch((error) => {
+    console.error("❌ Deployment failed:", error);
+    process.exit(1);
+  });
 
-  if (!fs.existsSync(contractsDir)) {
-    fs.mkdirSync(contractsDir, { recursive: true });
-  }
-
-  fs.writeFileSync(
-    path.join(contractsDir, `${name}-address.json`),
-    JSON.stringify({ address: contract.target || contract.address }, undefined, 2)
-  );
-
-  const artifact = hre.artifacts.readArtifactSync(name);
-  fs.writeFileSync(
-    path.join(contractsDir, `${name}.json`),
-    JSON.stringify(artifact, null, 2)
-  );
-}
-
-main().catch((error) => {
-  console.error("❌ Deployment failed:", error);
-  process.exit(1);
-});
