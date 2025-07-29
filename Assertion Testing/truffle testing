@@ -1,0 +1,57 @@
+****** needed this: "npm install --save-dev ganache" ********
+
+mkdir nil-truffle
+cd nil-truffle
+truffle init
+
+cd contracts
+vi nil.sol
+
+cd migrations
+vi 2_deploy_contracts.js
+
+const NILTransparencyContract = artifacts.require("NILTransparencyContract");
+
+module.exports = function (deployer) {
+  deployer.deploy(NILTransparencyContract);
+};
+
+cd nil-truffle
+npx ganache
+
+vi truffle-config.js
+module.exports = {
+  networks: {
+    development: {
+      host: "127.0.0.1",     // Ganache (npx) default
+      port: 8545,            // Make sure it matches npx ganache
+      network_id: "*"        // Match any network ID
+    }
+  },
+
+  compilers: {
+    solc: {
+      version: "0.8.20",     // Match your Solidity version
+    }
+  }
+};
+
+
+### in new terminal
+cd nil-truffle
+truffle compile
+truffle migrate --reset
+
+// functions being tested //
+
+let instance = await NILTransparencyContract.deployed()
+let accounts = await web3.eth.getAccounts()
+
+await instance.registerAthlete({from: accounts[1]})
+await instance.verifyAthlete(accounts[1], {from: accounts[0]})
+await instance.submitNILContract(web3.utils.toWei("2", "ether"), "Gatorade sponsorship", true, {from: accounts[1]})
+await instance.payAthlete(accounts[1], "Speaking event", {from: accounts[2], value: web3.utils.toWei("0.5", "ether")})
+await instance.logTransaction(web3.utils.toWei("0.1", "ether"), "Appearance fee", {from: accounts[1]})
+await instance.getAthleteTransactions(accounts[1], {from: accounts[1]})
+
+
